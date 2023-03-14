@@ -1,0 +1,9 @@
+{
+    "[blade]": {
+        "editor.defaultFormatter": "amirmarmul.laravel-blade-vscode",
+        "editor.formatOnSave": true
+      },
+      "emmet.includeLanguages": {
+        "blade": "html"
+      },
+}

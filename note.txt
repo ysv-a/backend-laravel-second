@@ -1,0 +1,191 @@
+Schema::create('categories', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->boolean('default')->default(false);
+    $table->timestamps();
+});
+
+
+Schema::create('posts', function (Blueprint $table) {
+    $table->id();
+
+    $table->foreignId('category_id')
+        ->constrained()
+        ->onDelete('restrict');
+
+    $table->string('name');
+    $table->string('slug')->unique();
+    $table->text('excerpt')->nullable();
+    $table->longText('content');
+    $table->timestamps();
+});
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Post;
+use App\Models\Category;
+use Illuminate\Http\Request;
+use App\Http\Requests\PostCreateRequest;
+use App\Http\Requests\PostUpdateRequest;
+
+class PostController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $posts = Post::with('category')->paginate(15);
+
+        return view('posts.index', ['posts' => $posts]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $categories = Category::pluck('name', 'id');
+        return view('posts.create', ['categories' => $categories]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(PostCreateRequest $request)
+    {
+        $post = new Post;
+        $post->name = $request->input('name');
+        $post->slug = $request->input('slug');
+        $post->excerpt = $request->input('excerpt');
+        $post->category_id = $request->input('category');
+        $post->content = $request->input('content');
+        $post->save();
+
+        return redirect()->route('posts.index')->with('success', 'The post has been successfully created');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Post $post)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Post $post)
+    {
+        $categories = Category::pluck('name', 'id');
+        return view('posts.edit', ['post' => $post, 'categories' => $categories]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(PostUpdateRequest $request, Post $post)
+    {
+        // $this->validate($request, [
+        //     'name' => 'required|string',
+        //     'slug' => 'required|string',
+        //     'content' => 'required|string',
+        // ]);
+
+
+        // $post->fill($request->all());
+        // $post->save();
+
+        // $category = Category::findOrFail($request->input('category'));
+
+        $post->name = $request->input('name');
+        $post->slug = $request->input('slug');
+        $post->excerpt = $request->input('excerpt');
+        $post->content = $request->input('content');
+        $post->category_id = $request->input('category');
+        $post->save();
+        // dd($request->all());
+
+        return back()->with('success', 'The post has been successfully updated');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Post $post)
+    {
+        $post->delete();
+
+        return redirect()->route('posts.index')->with('success', 'The post has been successfully removed');
+    }
+}
+
+
+===
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $fillable = ['name', 'slug', 'excerpt', 'content'];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+}
+
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Category extends Model
+{
+    use HasFactory;
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class, 'category_id', 'id');
+    }
+}
+
+Factory:
+    return [
+        'category_id' => Category::inRandomOrder()->first()->id,
+        'slug' => $this->faker->unique()->slug(),
+        'name' => $this->faker->sentence(),
+        'content' => $this->faker->realText(1200),
+        'excerpt' => $this->faker->paragraph(),
+    ];
+    public function definition(): array
+    {
+        return [
+            'name' => $this->faker->word(),
+        ];
+    }
+
+
+
+    Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
+    Route::get('/posts/{post}', [PostController::class, 'edit'])->name('posts.edit');
+    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
