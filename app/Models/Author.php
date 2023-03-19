@@ -14,4 +14,12 @@ class Author extends Model
     {
         return $this->belongsToMany(Book::class);
     }
+
+    public static function nameIdPluck()
+    {
+        $authors = Author::select('id', 'first_name', 'last_name', 'patronymic')->get();
+        $authors = $authors->mapWithKeys(fn ($author) => [$author->id => "{$author->first_name} {$author->last_name} {$author->patronymic}"]);
+
+        return $authors->all();
+    }
 }

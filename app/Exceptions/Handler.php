@@ -22,7 +22,7 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
-        //
+        BusinessException::class,
     ];
 
     /**
@@ -41,8 +41,15 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
+        $this->renderable(function (BusinessException $e) {
+            return redirect()->back()
+            ->with('error', $e->getMessage())
+            ->withInput();
+        });
+
         $this->reportable(function (Throwable $e) {
             //
         });
     }
+
 }

@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Dto\BookDto;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
 class BookUpdateRequest extends FormRequest
 {
@@ -24,4 +25,28 @@ class BookUpdateRequest extends FormRequest
             'file' => 'file|image',
         ];
     }
+
+    public function getDto(): BookDto
+    {
+
+        return new BookDto(
+            isbn: $this->input('isbn'),
+            title: $this->input('title'),
+            price: $this->input('price'),
+            page: $this->input('page'),
+            year: $this->input('year'),
+            authors_ids: $this->input('authors_ids'),
+            excerpt: $this->input('excerpt') ?? '',
+        );
+    }
+
+    public function bookFileDto(): array
+    {
+
+        return [
+            'hasFile' => $this->hasFile('image'),
+            'image' => $this->image
+        ];
+    }
+
 }
