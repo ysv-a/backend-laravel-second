@@ -15,5 +15,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\Category::factory(10)->create();
 
         \App\Models\Post::factory(50)->create();
+
+        \App\Models\Author::factory(10)->has(\App\Models\Book::factory()->count(3))->create();
     }
 }

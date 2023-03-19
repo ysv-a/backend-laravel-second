@@ -1,9 +1,11 @@
 <?php
 
 
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +41,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+
+    Route::patch('books/{book}/published', [BookController::class, 'publish'])->name('books.publish');
+    Route::resource('books', BookController::class);
+
+    Route::resource('authors', AuthorController::class);
 });
 
 require __DIR__.'/auth.php';
