@@ -28,6 +28,8 @@ class CsvBook extends Command
      */
     public function handle(BookService $service): void
     {
+
+
         $authors = [
             ['first_name' => 'From CSV1', 'last_name' => 'From CSV1', 'patronymic' => 'From CSV1', 'email' => 'from_CSV1@gm.com'],
             ['first_name' => 'From CSV2', 'last_name' => 'From CSV2', 'patronymic' => 'From CSV2', 'email' => 'from_CSV2@gm.com'],

@@ -5,6 +5,7 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Редактирование: {{$author->first_name}} {{$author->last_name}} {{$author->patronymic}}
+            {{-- Редактирование: {{$author->name->full_name}} --}}
         </h2>
     </x-slot>
 

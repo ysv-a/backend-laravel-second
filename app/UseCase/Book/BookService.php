@@ -30,7 +30,7 @@ class BookService
         $book = new Book;
         $book->isbn = $dto->isbn;
         $book->title = $dto->title;
-        $book->price = $dto->price;
+        $book->price = $dto->price->cent;
         $book->page = $dto->page;
         $book->year = $dto->year;
         $book->excerpt = $dto->excerpt;
@@ -40,9 +40,9 @@ class BookService
         $ids = [];
         foreach ($dto->authors as $authorInput) {
             $author = new Author;
-            $author->first_name = $authorInput->first_name;
-            $author->last_name = $authorInput->last_name;
-            $author->patronymic = $authorInput->patronymic;
+            $author->first_name = $authorInput->name->first_name;
+            $author->last_name = $authorInput->name->last_name;
+            $author->patronymic = $authorInput->name->patronymic;
             $author->email = $authorInput->email;
             $author->save();
 
@@ -81,7 +81,7 @@ class BookService
 
         $book->isbn = $dto->isbn;
         $book->title = $dto->title;
-        $book->price = $dto->price;
+        $book->price = $dto->price->cent;
         $book->page = $dto->page;
         $book->year = $dto->year;
         $book->excerpt = $dto->excerpt;
@@ -99,6 +99,9 @@ class BookService
     public function publish($id)
     {
         $book = Book::findOrFail($id);
+
+        $book->allowedPublish();
+
         $book->is_published = true;
         $book->save();
 

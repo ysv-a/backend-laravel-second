@@ -4,7 +4,9 @@ namespace App\Http\Requests;
 
 use App\Dto\BookDto;
 use App\Dto\AuthorDto;
+use App\ValueObjects\Name;
 use Illuminate\Validation\Rule;
+use App\ValueObjects\PriceReverse;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookCreateRequest extends FormRequest
@@ -20,11 +22,13 @@ class BookCreateRequest extends FormRequest
             // 'isbn' => 'required|unique:books,isbn',
             'isbn' => 'required',
             'title' => 'required|max:255',
-            'price' => 'required|integer',
+            'price' => 'required|decimal:0,2',
             'page' => 'required|integer',
             'year' => 'required|integer',
             'authors_ids' => 'required|array',
-            'file' => 'file|image',
+            'image' => 'file|image',
+            'authors.*.last_name' => 'required_with:authors.*.first_name',
+            'authors.*.email' => 'nullable|email|required_with:authors.*.first_name',
         ];
     }
 
@@ -38,9 +42,11 @@ class BookCreateRequest extends FormRequest
             }
 
             $authorDto = new AuthorDto(
-                first_name: $authorInput['first_name'],
-                last_name: $authorInput['last_name'],
-                patronymic: $authorInput['patronymic'],
+                name: new Name(
+                    $authorInput['first_name'],
+                    $authorInput['last_name'],
+                    $authorInput['patronymic']
+                ),
                 email: $authorInput['email'],
                 biography: null,
             );
@@ -52,7 +58,7 @@ class BookCreateRequest extends FormRequest
         return new BookDto(
             isbn: $this->input('isbn'),
             title: $this->input('title'),
-            price: $this->input('price'),
+            price: new PriceReverse($this->input('price')),
             page: $this->input('page'),
             year: $this->input('year'),
             authors: $authors,

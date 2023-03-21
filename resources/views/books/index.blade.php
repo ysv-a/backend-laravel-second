@@ -42,7 +42,7 @@
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{$book->isbn}}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{$book->title}}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">{{$book->price}}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{$book->price->formatted}}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{$book->page}}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{$book->year}}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{$book->is_published ? 'Yes' : 'No'}}</td>

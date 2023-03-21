@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Блог посты
+            Авторы
         </h2>
     </x-slot>
 
@@ -14,9 +14,10 @@
                 <table class="w-full mt-5 divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patronymic</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First name</th> --}}
+                            {{-- <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patronymic</th> --}}
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Book count</th>
                             <th scope="col" class="relative px-6 py-3">
@@ -30,9 +31,10 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($authors as $author)
                         <tr>
-                            <td class="px-6 py-4  text-sm text-gray-500">{{$author->first_name}}</td>
+                            <td class="px-6 py-4  text-sm text-gray-500">{{$author->name->full_name}}</td>
+                            {{-- <td class="px-6 py-4  text-sm text-gray-500">{{$author->first_name}}</td>
                             <td class="px-6 py-4  text-sm text-gray-500">{{$author->last_name}}</td>
-                            <td class="px-6 py-4  text-sm text-gray-500">{{$author->patronymic}}</td>
+                            <td class="px-6 py-4  text-sm text-gray-500">{{$author->patronymic}}</td> --}}
                             <td class="px-6 py-4  text-sm text-gray-500">{{$author->email}}</td>
                             <td class="px-6 py-4  text-sm text-gray-500">{{$author->books_count}}</td>
                             <td class="px-6 py-4  text-right text-sm font-medium">

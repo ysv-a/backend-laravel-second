@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Dto\BookDto;
 use Illuminate\Validation\Rule;
+use App\ValueObjects\PriceReverse;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookUpdateRequest extends FormRequest
@@ -18,11 +19,11 @@ class BookUpdateRequest extends FormRequest
         return [
             'isbn' => ['required', Rule::unique('books', 'isbn')->ignore($this->book)],
             'title' => 'required|max:255',
-            'price' => 'required|integer',
+            'price' => 'required|decimal:0,2',
             'page' => 'required|integer',
-            'year' => 'required|year',
+            'year' => 'required|integer',
             'authors_ids' => 'required|array',
-            'file' => 'file|image',
+            'image' => 'file|image',
         ];
     }
 
@@ -32,7 +33,7 @@ class BookUpdateRequest extends FormRequest
         return new BookDto(
             isbn: $this->input('isbn'),
             title: $this->input('title'),
-            price: $this->input('price'),
+            price: new PriceReverse($this->input('price')),
             page: $this->input('page'),
             year: $this->input('year'),
             authors_ids: $this->input('authors_ids'),

@@ -21,6 +21,7 @@ class BookController extends Controller
     {
         $books = Book::with('authors')->orderByDesc('id')->paginate(15);
 
+
         return view('books.index', ['books' => $books]);
     }
 
