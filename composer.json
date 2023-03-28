@@ -6,10 +6,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "darkaonline/l5-swagger": "^8.5",
         "guzzlehttp/guzzle": "^7.2",
+        "laravel-json-api/laravel": "^3.0",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
-        "laravel/tinker": "^2.8"
+        "laravel/tinker": "^2.8",
+        "mll-lab/laravel-graphiql": "^1.2",
+        "nuwave/lighthouse": "^6.3"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",

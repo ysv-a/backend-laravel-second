@@ -34,26 +34,28 @@ class BookCreateRequest extends FormRequest
 
     public function getDto(): BookDto
     {
-
         $authors = [];
-        foreach ($this->input('authors') as $authorInput) {
-            if(empty($authorInput['first_name'])){
-                continue;
+        if ($this->input('authors')) {
+            foreach ($this->input('authors')  as $authorInput) {
+                if (empty($authorInput['first_name'])) {
+                    continue;
+                }
+
+                $authorDto = new AuthorDto(
+                    name: new Name(
+                        $authorInput['first_name'],
+                        $authorInput['last_name'],
+                        $authorInput['patronymic']
+                    ),
+                    email: $authorInput['email'],
+                    biography: null,
+                );
+
+
+                $authors[] = $authorDto;
             }
-
-            $authorDto = new AuthorDto(
-                name: new Name(
-                    $authorInput['first_name'],
-                    $authorInput['last_name'],
-                    $authorInput['patronymic']
-                ),
-                email: $authorInput['email'],
-                biography: null,
-            );
-
-
-            $authors[] = $authorDto;
         }
+
 
         return new BookDto(
             isbn: $this->input('isbn'),
@@ -69,11 +71,9 @@ class BookCreateRequest extends FormRequest
 
     public function bookFileDto(): array
     {
-
         return [
             'hasFile' => $this->hasFile('image'),
             'image' => $this->image
         ];
     }
-
 }

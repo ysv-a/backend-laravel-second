@@ -2,8 +2,11 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use LaravelJsonApi\Exceptions\ExceptionParser;
+use LaravelJsonApi\Core\Exceptions\JsonApiException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 
 class Handler extends ExceptionHandler
 {
@@ -22,6 +25,7 @@ class Handler extends ExceptionHandler
      * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
+        JsonApiException::class,
         BusinessException::class,
     ];
 
@@ -41,15 +45,27 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->renderable(function (BusinessException $e) {
-            return redirect()->back()
-            ->with('error', $e->getMessage())
-            ->withInput();
+        $this->renderable(function (BusinessException $e, Request $request) {
+            if ($request->is('open-api/*')) {
+                $json = [
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ];
+
+                return response()->json($json, 400);
+            }
+
+            return redirect()->back()->with('error', $e->getMessage())->withInput();
         });
+
+        $this->renderable(
+            ExceptionParser::make()->renderable()
+        );
+
+
 
         $this->reportable(function (Throwable $e) {
             //
         });
     }
-
 }

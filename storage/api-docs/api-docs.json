@@ -1,0 +1,459 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "My API",
+        "version": "1"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000/open-api",
+            "description": "API server"
+        }
+    ],
+    "paths": {
+        "/books": {
+            "get": {
+                "tags": [
+                    "books"
+                ],
+                "summary": "Get list of books",
+                "operationId": "e4476a3d48d276a46b6e8e741cada1a4",
+                "parameters": [
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "sort",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "id",
+                                    "-id",
+                                    "title",
+                                    "created_at"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "description": "filter",
+                        "style": "deepObject",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "slug": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "offset",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "examples": {
+                            "0": {
+                                "summary": "0",
+                                "value": 0
+                            }
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "limit",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "examples": {
+                            "10": {
+                                "summary": "10",
+                                "value": 10
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/BookResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "books"
+                ],
+                "summary": "Store new book",
+                "operationId": "17a3ebc5c448fde0b4980827d5d942c3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "isbn",
+                                    "title"
+                                ],
+                                "properties": {
+                                    "isbn": {
+                                        "type": "string"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "page": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "year": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "excerpt": {
+                                        "type": "string"
+                                    },
+                                    "authors_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "authors": {
+                                        "type": "array",
+                                        "items": {
+                                            "$ref": "#/components/schemas/AuthorResource"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/books/{id}": {
+            "get": {
+                "tags": [
+                    "books"
+                ],
+                "summary": "Get books detail",
+                "operationId": "54c4ac1376e43f38a05ceb2ceded067b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "books"
+                ],
+                "summary": "Update existing book",
+                "operationId": "ea839a8aabfbe64c67d6ef12c8e52a97",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "isbn": {
+                                        "type": "string"
+                                    },
+                                    "title": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "page": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "year": {
+                                        "type": "integer",
+                                        "format": "int64"
+                                    },
+                                    "excerpt": {
+                                        "type": "string"
+                                    },
+                                    "authors_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BookResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "books"
+                ],
+                "summary": "Delete existing book",
+                "operationId": "2ef0324222a37cbfd69c188c747830ad",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "book id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/upload": {
+            "post": {
+                "tags": [
+                    "file"
+                ],
+                "summary": "upload image",
+                "operationId": "848b281d1a9e7bfea22f80d6f9dbb3ca",
+                "requestBody": {
+                    "description": "Upload images request body",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "file_url": {
+                                            "description": "Url file",
+                                            "type": "string",
+                                            "default": "http://localhost/images/examples.jpg"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/": {
+            "get": {
+                "tags": [
+                    "Info"
+                ],
+                "operationId": "06eb65975fcc27d4b25c78658cc43cd4",
+                "responses": {
+                    "200": {
+                        "description": "API version"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthorResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "example": 1
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "example": 1
+                    },
+                    "patronymic": {
+                        "type": "string",
+                        "example": 1
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": 1
+                    },
+                    "biography": {
+                        "type": "string",
+                        "example": 1
+                    }
+                },
+                "type": "object"
+            },
+            "BookResource": {
+                "properties": {
+                    "id": {
+                        "description": "Transform the resource into an array.",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "year": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "price": {
+                        "properties": {
+                            "cent": {
+                                "type": "integer"
+                            },
+                            "dollar": {
+                                "type": "number",
+                                "format": "double"
+                            },
+                            "formatted": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "isbn": {
+                        "type": "string",
+                        "example": "Eum asperiores cumque inventore assumenda"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Eum asperiores cumque inventore assumenda"
+                    },
+                    "excerpt": {
+                        "type": "string",
+                        "example": "Eum asperiores cumque inventore assumenda"
+                    },
+                    "authors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorResource"
+                        }
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

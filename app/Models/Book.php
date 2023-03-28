@@ -14,6 +14,7 @@ class Book extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['isbn', 'title', 'price', 'page', 'year', 'excerpt'];
 
     public function authors(): BelongsToMany
     {
@@ -26,15 +27,13 @@ class Book extends Model
             get: fn ($value, $attributes): Price => new Price(
                 cent: $value,
             ),
-
         );
     }
 
     public function allowedPublish()
     {
-        if($this->price->cent <= 100){
+        if ($this->price->cent <= 100) {
             throw new BusinessException("The book cannot be published");
         }
     }
-
 }

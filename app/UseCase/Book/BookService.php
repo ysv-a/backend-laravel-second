@@ -19,7 +19,6 @@ class BookService
 
     public function create(BookDto $dto, array $bookFileDto = [])
     {
-
         $this->isbnIsUnique($dto->isbn);
 
         $path = null;
@@ -60,14 +59,13 @@ class BookService
 
         $book->authors()->sync($ids);
 
-        Mail::send(new NewBook($book));
+        // Mail::send(new NewBook($book));
 
         return $book;
     }
 
     public function update($id, BookDto $dto, array $bookFileDto = [])
     {
-
         $book = Book::findOrFail($id);
 
         $path = null;
@@ -88,13 +86,15 @@ class BookService
         $book->image = $path;
         $book->save();
 
-        if(count($dto->authors_ids)){
+        if (count($dto->authors_ids)) {
             $book->authors()->sync($dto->authors_ids);
         }
 
 
         return $book->refresh();
     }
+
+
 
     public function publish($id)
     {
@@ -112,7 +112,7 @@ class BookService
     {
         $book = Book::where('isbn', $bookDto->isbn)->first();
 
-        if($book){
+        if ($book) {
             return $this->update($book->id, $bookDto);
         }
         return $this->create($bookDto);
@@ -120,15 +120,14 @@ class BookService
 
     private function isbnIsUnique(string $isbn, $exceptId = null): void
     {
-        if($exceptId){
+        if ($exceptId) {
             $existBook = Book::where('isbn', $isbn)->where('id', '<>', $exceptId)->count();
-        }else{
+        } else {
             $existBook = Book::where('isbn', $isbn)->count();
         }
 
-        if($existBook){
+        if ($existBook) {
             throw new BusinessException("Book with this isbn already exists " . $isbn);
         }
     }
-
 }

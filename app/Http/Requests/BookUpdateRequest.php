@@ -17,7 +17,7 @@ class BookUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'isbn' => ['required', Rule::unique('books', 'isbn')->ignore($this->book)],
+            'isbn' => ['required', Rule::unique('books', 'isbn')->ignore($this->id)],
             'title' => 'required|max:255',
             'price' => 'required|decimal:0,2',
             'page' => 'required|integer',
@@ -29,7 +29,6 @@ class BookUpdateRequest extends FormRequest
 
     public function getDto(): BookDto
     {
-
         return new BookDto(
             isbn: $this->input('isbn'),
             title: $this->input('title'),
@@ -43,11 +42,9 @@ class BookUpdateRequest extends FormRequest
 
     public function bookFileDto(): array
     {
-
         return [
             'hasFile' => $this->hasFile('image'),
             'image' => $this->image
         ];
     }
-
 }
