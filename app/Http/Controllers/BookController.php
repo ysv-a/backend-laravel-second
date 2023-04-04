@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Mail\NewBook;
 use App\Models\Author;
 use Illuminate\Http\Request;
+use App\Services\FileUploader;
 use App\UseCase\Book\BookService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -40,14 +41,15 @@ class BookController extends Controller
      * Store a newly created resource in storage.
      */
 
-     public function store(BookCreateRequest $request, BookService $bookService)
+     public function store(BookCreateRequest $request, FileUploader $uploader, BookService $bookService)
      {
-        $dto = $request->getDto();
+         $dto = $request->getDto();
+         $file_path =  $request->hasFile('image') ? $uploader->upload($request->image) : null;
 
-        $book = $bookService->create($dto, $request->bookFileDto());
+         $book = $bookService->create($dto, $file_path);
 
 
-        return redirect()->route('books.edit', ['book' => $book])->with('success', 'The book has been successfully created');
+         return redirect()->route('books.edit', ['book' => $book])->with('success', 'The book has been successfully created');
      }
 
     // public function store(BookCreateRequest $request)
@@ -115,12 +117,11 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(BookUpdateRequest $request, Book $book, BookService $bookService)
+    public function update(BookUpdateRequest $request, FileUploader $uploader, Book $book, BookService $bookService)
     {
-
         $dto = $request->getDto();
-
-        $bookService->update($book->id, $dto, $request->bookFileDto());
+        $file_path =  $request->hasFile('image') ? $uploader->upload($request->image) : null;
+        $bookService->update($book->id, $dto, $file_path);
 
         return back()->with('success', 'The book has been successfully updated');
     }

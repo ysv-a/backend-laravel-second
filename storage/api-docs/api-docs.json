@@ -139,6 +139,9 @@
                                     "excerpt": {
                                         "type": "string"
                                     },
+                                    "base64_image": {
+                                        "type": "string"
+                                    },
                                     "authors_ids": {
                                         "type": "array",
                                         "items": {
@@ -370,6 +373,76 @@
     },
     "components": {
         "schemas": {
+            "AuthorDto": {
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "biography": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "properties": {
+                            "first_name": {
+                                "type": "string"
+                            },
+                            "last_name": {
+                                "type": "string"
+                            },
+                            "patronymic": {
+                                "type": "string"
+                            },
+                            "full_name": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "BookDto": {
+                "required": [
+                    "isbn",
+                    "title"
+                ],
+                "properties": {
+                    "isbn": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "page": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "excerpt": {
+                        "type": "string"
+                    },
+                    "authors_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "authors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AuthorResource"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "AuthorResource": {
                 "properties": {
                     "id": {
@@ -435,15 +508,15 @@
                     },
                     "isbn": {
                         "type": "string",
-                        "example": "Eum asperiores cumque inventore assumenda"
+                        "example": "isbn"
                     },
                     "title": {
                         "type": "string",
-                        "example": "Eum asperiores cumque inventore assumenda"
+                        "example": "title"
                     },
                     "excerpt": {
                         "type": "string",
-                        "example": "Eum asperiores cumque inventore assumenda"
+                        "example": "excerpt"
                     },
                     "authors": {
                         "type": "array",

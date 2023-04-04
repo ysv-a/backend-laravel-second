@@ -5,6 +5,7 @@ namespace App\Http\Controllers\OpenApi;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
+use App\Services\FileUploader;
 use App\UseCase\Book\BookService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\BookCreateRequest;
@@ -176,11 +177,12 @@ class BookController
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
+            // ref: "#/components/schemas/BookDto"
             required: ['isbn', 'title'],
             properties: [
                 new OA\Property(
                     property: "isbn",
-                    type: "string"
+                    type: "string",
                 ),
                 new OA\Property(
                     property: "title",
@@ -203,6 +205,10 @@ class BookController
                 ),
                 new OA\Property(
                     property: "excerpt",
+                    type: "string",
+                ),
+                new OA\Property(
+                    property: "base64_image",
                     type: "string",
                 ),
                 new OA\Property(
@@ -229,10 +235,11 @@ class BookController
             ref: "#/components/schemas/BookResource"
         )
     )]
-    public function store(BookCreateRequest $request, BookService $bookService): JsonResponse
+    public function store(BookCreateRequest $request, FileUploader $uploader, BookService $bookService): JsonResponse
     {
+        $file_path =  $request->input('base64_image') != '' ? $uploader->uploadBase64($request->input('base64_image')) : null;
         $dto = $request->getDto();
-        $book = $bookService->create($dto);
+        $book = $bookService->create($dto, $file_path);
 
         return (new BookResource($book))
             ->response()

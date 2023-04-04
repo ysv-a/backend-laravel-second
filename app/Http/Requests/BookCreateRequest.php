@@ -8,6 +8,7 @@ use App\ValueObjects\Name;
 use Illuminate\Validation\Rule;
 use App\ValueObjects\PriceReverse;
 use Illuminate\Foundation\Http\FormRequest;
+use EventSauce\ObjectHydrator\ObjectMapperUsingReflection;
 
 class BookCreateRequest extends FormRequest
 {
@@ -34,9 +35,17 @@ class BookCreateRequest extends FormRequest
 
     public function getDto(): BookDto
     {
+        // $mapper = new ObjectMapperUsingReflection();
+        // $command = $mapper->hydrateObject(
+        //     BookDto::class,
+        //     $this->all(),
+        // );
+
+        // return $command;
+
         $authors = [];
         if ($this->input('authors')) {
-            foreach ($this->input('authors')  as $authorInput) {
+            foreach ($this->input('authors') as $authorInput) {
                 if (empty($authorInput['first_name'])) {
                     continue;
                 }

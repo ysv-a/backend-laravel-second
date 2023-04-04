@@ -9,6 +9,7 @@ use LaravelJsonApi\Eloquent\Fields\Str;
 use LaravelJsonApi\Eloquent\Fields\Number;
 use LaravelJsonApi\Eloquent\Filters\Where;
 use LaravelJsonApi\Eloquent\Fields\DateTime;
+use LaravelJsonApi\Eloquent\Fields\ArrayList;
 use LaravelJsonApi\Eloquent\Filters\WhereIdIn;
 use LaravelJsonApi\Eloquent\Contracts\Paginator;
 use LaravelJsonApi\Eloquent\Pagination\PagePagination;
@@ -49,6 +50,7 @@ class BookSchema extends Schema
             Number::make('price'),
             Number::make('page'),
             Str::make('excerpt'),
+            // ArrayList::make('authors_custom'),
             Number::make('year'),
             // BelongsToMany::make('users')->type('authors'),
             BelongsToMany::make('authors'),

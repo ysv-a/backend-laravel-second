@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\BookController;
 use LaravelJsonApi\Laravel\Facades\JsonApiRoute;
 use LaravelJsonApi\Laravel\Http\Controllers\JsonApiController;
 
@@ -21,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 JsonApiRoute::server('v1')->prefix('v1')->resources(function ($server) {
-    $server->resource('books', JsonApiController::class)->relationships(function ($relations) {
+    $server->resource('books', BookController::class)->relationships(function ($relations) {
         $relations->hasMany('authors');
     });
     $server->resource('authors', JsonApiController::class)->relationships(function ($relations) {

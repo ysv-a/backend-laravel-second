@@ -6,6 +6,7 @@ use App\Dto\BookDto;
 use App\Models\Book;
 use App\Mail\NewBook;
 use App\Models\Author;
+use App\Services\FileUploader;
 use Illuminate\Support\Facades\Mail;
 use App\Exceptions\BusinessException;
 use Illuminate\Support\Facades\Storage;
@@ -13,18 +14,13 @@ use Illuminate\Support\Facades\Storage;
 class BookService
 {
     public function __construct(
-
+        private readonly FileUploader $uploader
     ) {
     }
 
-    public function create(BookDto $dto, array $bookFileDto = [])
+    public function create(BookDto $dto, string $fileUrl = null)
     {
         $this->isbnIsUnique($dto->isbn);
-
-        $path = null;
-        if (count($bookFileDto) && $bookFileDto['hasFile']) {
-            $path = Storage::putFile('uploads', $bookFileDto['image']);
-        }
 
         $book = new Book;
         $book->isbn = $dto->isbn;
@@ -33,7 +29,11 @@ class BookService
         $book->page = $dto->page;
         $book->year = $dto->year;
         $book->excerpt = $dto->excerpt;
-        $book->image = $path;
+
+        if ($fileUrl) {
+            $book->image = $fileUrl;
+        }
+
         $book->save();
 
         $ids = [];
@@ -61,20 +61,15 @@ class BookService
 
         // Mail::send(new NewBook($book));
 
-        return $book;
+        return $book->refresh();
     }
 
-    public function update($id, BookDto $dto, array $bookFileDto = [])
+    public function update($id, BookDto $dto, string $fileUrl = null)
     {
         $book = Book::findOrFail($id);
 
-        $path = null;
-        if (count($bookFileDto) && $bookFileDto['hasFile']) {
-            $path = Storage::putFile('uploads', $bookFileDto['image']);
-        }
-
-        if ($path && $book->image) {
-            Storage::delete($book->image);
+        if ($fileUrl && $book->image) {
+            $this->uploader->remove($book->image);
         }
 
         $book->isbn = $dto->isbn;
@@ -83,7 +78,9 @@ class BookService
         $book->page = $dto->page;
         $book->year = $dto->year;
         $book->excerpt = $dto->excerpt;
-        $book->image = $path;
+        if ($fileUrl) {
+            $book->image = $fileUrl;
+        }
         $book->save();
 
         if (count($dto->authors_ids)) {
