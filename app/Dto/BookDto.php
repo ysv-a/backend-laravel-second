@@ -66,6 +66,7 @@ class BookDto
      */
 
     public function __construct(
+        public readonly int $user_id,
         public readonly string $isbn,
         public readonly string $title,
         #[CastToMoney]

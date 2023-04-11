@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Dto\BookDto;
 use Illuminate\Validation\Rule;
 use App\ValueObjects\PriceReverse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookUpdateRequest extends FormRequest
@@ -17,7 +18,7 @@ class BookUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'isbn' => ['required', Rule::unique('books', 'isbn')->ignore($this->id)],
+            'isbn' => ['required'],
             'title' => 'required|max:255',
             'price' => 'required|decimal:0,2',
             'page' => 'required|integer',
@@ -30,6 +31,7 @@ class BookUpdateRequest extends FormRequest
     public function getDto(): BookDto
     {
         return new BookDto(
+            user_id: Auth::user()->id,
             isbn: $this->input('isbn'),
             title: $this->input('title'),
             price: new PriceReverse($this->input('price')),

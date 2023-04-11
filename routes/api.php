@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Jwt\AuthController;
 use App\Http\Controllers\Api\V1\BookController;
 use LaravelJsonApi\Laravel\Facades\JsonApiRoute;
 use LaravelJsonApi\Laravel\Http\Controllers\JsonApiController;
@@ -28,4 +29,15 @@ JsonApiRoute::server('v1')->prefix('v1')->resources(function ($server) {
     $server->resource('authors', JsonApiController::class)->relationships(function ($relations) {
         $relations->hasMany('books');
     });
+});
+
+
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth-api'
+], function ($router) {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::post('me', [AuthController::class, 'me']);
 });

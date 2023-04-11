@@ -9,9 +9,12 @@ use Illuminate\Validation\Rule;
 use App\ValueObjects\PriceReverse;
 use Illuminate\Foundation\Http\FormRequest;
 use EventSauce\ObjectHydrator\ObjectMapperUsingReflection;
+use Illuminate\Support\Facades\Auth;
 
 class BookCreateRequest extends FormRequest
 {
+
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -35,13 +38,14 @@ class BookCreateRequest extends FormRequest
 
     public function getDto(): BookDto
     {
-        // $mapper = new ObjectMapperUsingReflection();
-        // $command = $mapper->hydrateObject(
-        //     BookDto::class,
-        //     $this->all(),
-        // );
 
-        // return $command;
+        $mapper = new ObjectMapperUsingReflection();
+        $command = $mapper->hydrateObject(
+            BookDto::class,
+            [...$this->all(), 'user_id' => Auth::user()->id],
+        );
+
+        return $command;
 
         $authors = [];
         if ($this->input('authors')) {

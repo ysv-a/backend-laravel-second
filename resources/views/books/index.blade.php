@@ -36,7 +36,7 @@
                                 {{
                                     $book
                                     ->authors
-                                    ->map(fn($author) => "{$author->first_name} {$author->last_name} {$author->patronymic}")
+                                    ->map(fn($author) => $author->name->full_name)
                                     ->join(', ')
                                  }}
                             </td>

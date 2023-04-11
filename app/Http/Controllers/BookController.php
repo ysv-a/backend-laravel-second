@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\BookCreateRequest;
 use App\Http\Requests\BookUpdateRequest;
+use Illuminate\Support\Facades\Gate;
 
 class BookController extends Controller
 {
@@ -32,7 +33,7 @@ class BookController extends Controller
     public function create()
     {
         $authors = Author::select('id', 'first_name', 'last_name', 'patronymic')->get();
-        $authors = $authors->mapWithKeys(fn ($author) => [$author->id => "{$author->first_name} {$author->last_name} {$author->patronymic}"]);
+        $authors = $authors->mapWithKeys(fn ($author) => [$author->id => $author->name->full_name]);
 
         return view('books.create', ['authors' => $authors]);
     }
@@ -99,8 +100,14 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
+
+        // $this->authorize('view', $book);
+        // if (! Gate::allows('update-book', $book)) {
+        //     abort(403);
+        // }
+
         $authors = Author::select('id', 'first_name', 'last_name', 'patronymic')->get();
-        $authors = $authors->mapWithKeys(fn ($author) => [$author->id => "{$author->first_name} {$author->last_name} {$author->patronymic}"]);
+        $authors = $authors->mapWithKeys(fn ($author) => [$author->id => $author->name->full_name]);
 
         $selectedAuthorsIds = $book->authors
         ->map(fn ($author) => $author->id)
@@ -119,6 +126,8 @@ class BookController extends Controller
      */
     public function update(BookUpdateRequest $request, FileUploader $uploader, Book $book, BookService $bookService)
     {
+        // $this->authorize('update', $book);
+
         $dto = $request->getDto();
         $file_path =  $request->hasFile('image') ? $uploader->upload($request->image) : null;
         $bookService->update($book->id, $dto, $file_path);

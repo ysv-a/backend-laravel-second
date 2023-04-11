@@ -10,11 +10,14 @@ use App\Services\FileUploader;
 use Illuminate\Support\Facades\Mail;
 use App\Exceptions\BusinessException;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\ConnectionInterface;
+use DB;
 
 class BookService
 {
     public function __construct(
-        private readonly FileUploader $uploader
+        private readonly FileUploader $uploader,
+        private readonly ConnectionInterface $connection,
     ) {
     }
 
@@ -23,42 +26,40 @@ class BookService
         $this->isbnIsUnique($dto->isbn);
 
         $book = new Book;
-        $book->isbn = $dto->isbn;
-        $book->title = $dto->title;
-        $book->price = $dto->price->cent;
-        $book->page = $dto->page;
-        $book->year = $dto->year;
-        $book->excerpt = $dto->excerpt;
 
-        if ($fileUrl) {
-            $book->image = $fileUrl;
-        }
+        DB::transaction(function () use ($book, $dto, $fileUrl) {
+            $book->user_id = $dto->user_id;
+            $book->isbn = $dto->isbn;
+            $book->title = $dto->title;
+            $book->price = $dto->price->cent;
+            $book->page = $dto->page;
+            $book->year = $dto->year;
+            $book->excerpt = $dto->excerpt;
 
-        $book->save();
+            if ($fileUrl) {
+                $book->image = $fileUrl;
+            }
 
-        $ids = [];
-        foreach ($dto->authors as $authorInput) {
-            $author = new Author;
-            $author->first_name = $authorInput->name->first_name;
-            $author->last_name = $authorInput->name->last_name;
-            $author->patronymic = $authorInput->name->patronymic;
-            $author->email = $authorInput->email;
-            $author->save();
+            $book->save();
 
-            // $author = Author::firstOrCreate([
-            //     'email' => $authorInput->email
-            // ], [
-            //     'first_name' => $authorInput->first_name,
-            //     'last_name' => $authorInput->last_name,
-            //     'patronymic' => $authorInput->patronymic,
-            // ]);
+            $ids = [];
+            foreach ($dto->authors as $authorInput) {
+                $author = Author::firstOrCreate([
+                    'email' => $authorInput->email
+                ], [
+                    'first_name' => $authorInput->first_name,
+                    'last_name' => $authorInput->last_name,
+                    'patronymic' => $authorInput->patronymic,
+                ]);
 
-            $ids[] = $author->id;
-        }
-        $ids = [...$ids, ...$dto->authors_ids];
+                $ids[] = $author->id;
+            }
+            $ids = [...$ids, ...$dto->authors_ids];
 
-        $book->authors()->sync($ids);
+            $book->authors()->sync($ids);
+        });
 
+        // $this->connection->transaction(function () use ($book, $dto, $fileUrl) { });
         // Mail::send(new NewBook($book));
 
         return $book->refresh();
@@ -66,26 +67,34 @@ class BookService
 
     public function update($id, BookDto $dto, string $fileUrl = null)
     {
+
+        $this->isbnIsUnique($dto->isbn, $id);
+
         $book = Book::findOrFail($id);
 
-        if ($fileUrl && $book->image) {
-            $this->uploader->remove($book->image);
+        $oldImage = $book->image;
+
+        DB::transaction(function () use ($book, $dto, $fileUrl) {
+            $book->isbn = $dto->isbn;
+            $book->title = $dto->title;
+            $book->price = $dto->price->cent;
+            $book->page = $dto->page;
+            $book->year = $dto->year;
+            $book->excerpt = $dto->excerpt;
+            if ($fileUrl) {
+                $book->image = $fileUrl;
+            }
+            $book->save();
+
+            if (count($dto->authors_ids)) {
+                $book->authors()->sync($dto->authors_ids);
+            }
+        });
+
+        if ($fileUrl && $oldImage) {
+            $this->uploader->remove($oldImage);
         }
 
-        $book->isbn = $dto->isbn;
-        $book->title = $dto->title;
-        $book->price = $dto->price->cent;
-        $book->page = $dto->page;
-        $book->year = $dto->year;
-        $book->excerpt = $dto->excerpt;
-        if ($fileUrl) {
-            $book->image = $fileUrl;
-        }
-        $book->save();
-
-        if (count($dto->authors_ids)) {
-            $book->authors()->sync($dto->authors_ids);
-        }
 
 
         return $book->refresh();
