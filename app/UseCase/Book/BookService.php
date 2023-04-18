@@ -2,22 +2,26 @@
 
 namespace App\UseCase\Book;
 
+use DB;
 use App\Dto\BookDto;
 use App\Models\Book;
 use App\Mail\NewBook;
 use App\Models\Author;
 use App\Services\FileUploader;
+use App\Events\BookUpdatePrice;
 use Illuminate\Support\Facades\Mail;
 use App\Exceptions\BusinessException;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\ConnectionInterface;
-use DB;
+use App\Services\Dispatchering\MultiDispatcher;
 
 class BookService
 {
     public function __construct(
         private readonly FileUploader $uploader,
         private readonly ConnectionInterface $connection,
+        private readonly MultiDispatcher $dispatcher,
     ) {
     }
 
@@ -73,6 +77,7 @@ class BookService
         $book = Book::findOrFail($id);
 
         $oldImage = $book->image;
+        $old_price = $book->price;
 
         DB::transaction(function () use ($book, $dto, $fileUrl) {
             $book->isbn = $dto->isbn;
@@ -95,7 +100,14 @@ class BookService
             $this->uploader->remove($oldImage);
         }
 
+        $book->changePrice($dto->price->cent);
 
+        $this->dispatcher->multiDispatch($book->releaseEvents());
+        // if($dto->price->cent < $old_price->cent) {
+        //     $this->dispatcher->dispatch(
+        //         new BookUpdatePrice($book->id)
+        //     );
+        // }
 
         return $book->refresh();
     }

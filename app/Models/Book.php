@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\ValueObjects\Price;
+use App\Events\BookUpdatePrice;
+use App\Models\EntityWithEvents;
 use App\ValueObjects\PriceReverse;
 use App\Exceptions\BusinessException;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Book extends Model
 {
-    use HasFactory;
+    use HasFactory, EntityWithEvents;
 
     protected $fillable = ['isbn', 'title', 'price', 'page', 'year', 'excerpt'];
 
@@ -36,4 +38,13 @@ class Book extends Model
             throw new BusinessException("The book cannot be published");
         }
     }
+
+    public function changePrice($price)
+    {
+
+        if($price < $this->price->cent) {
+            $this->record(new BookUpdatePrice($this->id));
+        }
+    }
+
 }
