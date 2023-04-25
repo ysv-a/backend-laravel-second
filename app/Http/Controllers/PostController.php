@@ -25,8 +25,11 @@ class PostController extends Controller
      */
     public function create()
     {
+        $jsonObject = ['config' => 'config'];
+        $jsonObject = json_encode($jsonObject);
+
         $categories = Category::pluck('name', 'id');
-        return view('posts.create', ['categories' => $categories]);
+        return view('posts.create', ['categories' => $categories, 'jsonObject' => $jsonObject]);
     }
 
     /**

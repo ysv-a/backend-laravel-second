@@ -51,14 +51,15 @@ class FileController extends Controller
     public function upload(Request $request): string
     {
         $this->validate($request, [
-            'file' => 'required|file|image',
+            'file' => 'required|file',
+            // 'file' => 'required|file|image',
         ]);
 
         $file = $request->file('file');
 
         $timestamp = now()->format('Y-m-d-H-i-s');
-//        getClientOriginalName -  оригинальное имя
-//        getClientOriginalExtension -  расширение
+        //        getClientOriginalName -  оригинальное имя // hashName
+        //        getClientOriginalExtension -  расширение // extension
         $filename = "{$timestamp}-{$file->getClientOriginalName()}";
 
         Storage::disk('public')->putFileAs("uploads", $file, $filename);

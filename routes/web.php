@@ -30,6 +30,8 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/document', [ProfileController::class, 'addDcouments'])->name('profile.add.document');
+    Route::get('/profile/document/{uuid}', [ProfileController::class, 'getDcouments'])->name('profile.get.document');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 

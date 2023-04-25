@@ -30,7 +30,8 @@ class BookCreateRequest extends FormRequest
             'page' => 'required|integer',
             'year' => 'required|integer',
             'authors_ids' => 'required|array',
-            'image' => 'file|image',
+            'image' => 'file',
+            // 'image' => 'file|image',
             'authors.*.last_name' => 'required_with:authors.*.first_name',
             'authors.*.email' => 'nullable|email|required_with:authors.*.first_name',
         ];

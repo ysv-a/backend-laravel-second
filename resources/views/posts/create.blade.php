@@ -61,12 +61,27 @@
         </div>
     </div>
 
+    <div id="exampleJson" data-json="{{$jsonObject}}">JS EXAMPLE</div>
 
+
+    {{-- var app = {{ Js::from($objecttt) }}; --}}
     @push('scripts')
+    <script id="config-js" type="inline/js-script">
+        {{$jsonObject}}
+    </script>
     <script src="/ckeditor.js"></script>
-    <script>
-        ClassicEditor.create(document.querySelector('#editor'))
+    {{-- <script>
+        const json = document.querySelector('#exampleJson').getAttribute('data-json');
+        const parsed = JSON.parse(json);
+        console.log(parsed);
 
+
+        const json2 = document.querySelector('#config-js').textContent;
+        const parsed2 = JSON.parse(json);
+        console.log(parsed2);
+    </script> --}}
+    <script>
+    ClassicEditor.create(document.querySelector('#editor'))
     </script>
     @endpush
 

@@ -12,6 +12,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProfileController extends Controller
 {
@@ -23,9 +25,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $documents = $request->user()->getMedia('documents');
 
         return view('profile.edit', [
             'user' => $request->user(),
+            'documents' => $documents,
         ]);
     }
 
@@ -65,4 +69,25 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function addDcouments(Request $request)
+    {
+        $this->validate($request, [
+            'file' => 'required|file',
+        ]);
+
+        $file = $request->file('file');
+
+        auth()->user()->addMedia($file)->toMediaCollection('documents', 'local');
+
+        return Redirect::to('/profile');
+    }
+
+
+    public function getDcouments(string $uuid)
+    {
+        $media = Media::where('uuid', $uuid)->first();
+        return response()->download($media->getPath(), $media->file_name);
+    }
+
 }

@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.8",
         "mll-lab/laravel-graphiql": "^1.2",
         "nuwave/lighthouse": "^6.3",
+        "spatie/laravel-medialibrary": "^10.9",
         "tymon/jwt-auth": "^2.0"
     },
     "require-dev": {
